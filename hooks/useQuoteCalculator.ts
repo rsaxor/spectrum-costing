@@ -20,7 +20,13 @@ export const useQuoteCalculator = () => {
 	// --- 1. GLOBAL STATE ---
 	const [printSize, setPrintSize] = useState<PrintSize>("A4");
 	const [jobQty, setJobQty] = useState<number>(100);
+	
+	// Pricing State
+    const [markupPercentage, setMarkupPercentage] = useState<number>(0);
+    const [showMarkup, setShowMarkup] = useState<boolean>(false);
+	
 	const [lines, setLines] = useState<LineItem[]>([]);
+	
 
 	// --- 2. DATA FETCHING ---
 	// Paper Data
@@ -48,6 +54,12 @@ export const useQuoteCalculator = () => {
 
 	// --- 4. CALCULATION ENGINE ---
 	const calculatedLines = useMemo(() => {
+
+		// Determine the multiplier based on the toggle
+        // If Toggle is ON: Multiplier is (1 + 20/100) = 1.2
+        // If Toggle is OFF: Multiplier is 1.0 (Raw Cost)
+        const multiplier = showMarkup ? (1 + (markupPercentage / 100)) : 1;
+
 		return lines.map((line) => {
 			let unitPrice = 0;
 			let rangeLabel = "Out of Range";
@@ -156,12 +168,12 @@ export const useQuoteCalculator = () => {
 
             return {
                 ...line,
-                unitPrice,
+                unitPrice: roundMoney(unitPrice * multiplier),
                 rangeLabel,
-                totalPrice: total
+                totalPrice: roundMoney(total * multiplier),
             };
         });
-    }, [lines, parsedPaper, parsedFinishing, jobQty, printSize]); // Added printSize dependency
+    }, [lines, parsedPaper, parsedFinishing, jobQty, printSize, markupPercentage, showMarkup]); // Added printSize dependency
 
 	const grandTotal = calculatedLines.reduce(
 		(acc, curr) => acc + curr.totalPrice,
@@ -245,6 +257,10 @@ export const useQuoteCalculator = () => {
 		jobQty,
 		lines: calculatedLines,
 		grandTotal,
+		markupPercentage,
+        showMarkup,
+        setMarkupPercentage,
+        setShowMarkup,
 		paperOptions: parsedPaper?.papers || [],
 		finishingOptions: filteredFinishingOptions, // Return filtered list
 		isLoading: !paperCsv, // Simple loading check
