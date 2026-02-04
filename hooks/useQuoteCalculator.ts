@@ -22,8 +22,8 @@ export const useQuoteCalculator = () => {
 	const [jobQty, setJobQty] = useState<number>(100);
 	
 	// Pricing State
-    const [markupPercentage, setMarkupPercentage] = useState<number>(0);
-    const [showMarkup, setShowMarkup] = useState<boolean>(false);
+    const [discountPercentage, setDiscountPercentage] = useState<number>(0);
+    const [showDiscount, setShowDiscount] = useState<boolean>(false);
 	
 	const [lines, setLines] = useState<LineItem[]>([]);
 	
@@ -55,10 +55,18 @@ export const useQuoteCalculator = () => {
 	// --- 4. CALCULATION ENGINE ---
 	const calculatedLines = useMemo(() => {
 
-		// Determine the multiplier based on the toggle
-        // If Toggle is ON: Multiplier is (1 + 20/100) = 1.2
-        // If Toggle is OFF: Multiplier is 1.0 (Raw Cost)
-        const multiplier = showMarkup ? (1 + (markupPercentage / 100)) : 1;
+		// 1. BASE MARKUP: We always start with 20% markup (1.2)
+        const baseMultiplier = 1.2;
+
+        // 2. DISCOUNT LOGIC: 
+        // If toggle is ON, we multiply the Base by (1 - 0.10) -> 0.9
+        // If toggle is OFF, we keep the Base (1.0)
+        const discountFactor = showDiscount 
+            ? (1 - (Math.abs(discountPercentage) / 100)) 
+            : 1;
+
+        // 3. FINAL MULTIPLIER
+        const multiplier = baseMultiplier * discountFactor;
 
 		return lines.map((line) => {
 			let unitPrice = 0;
@@ -173,7 +181,7 @@ export const useQuoteCalculator = () => {
                 totalPrice: roundMoney(total * multiplier),
             };
         });
-    }, [lines, parsedPaper, parsedFinishing, jobQty, printSize, markupPercentage, showMarkup]); // Added printSize dependency
+    }, [lines, parsedPaper, parsedFinishing, jobQty, printSize, discountPercentage, showDiscount]); // Added printSize dependency
 
 	const grandTotal = calculatedLines.reduce(
 		(acc, curr) => acc + curr.totalPrice,
@@ -257,10 +265,10 @@ export const useQuoteCalculator = () => {
 		jobQty,
 		lines: calculatedLines,
 		grandTotal,
-		markupPercentage,
-        showMarkup,
-        setMarkupPercentage,
-        setShowMarkup,
+		discountPercentage,
+        showDiscount,
+        setDiscountPercentage,
+        setShowDiscount,
 		paperOptions: parsedPaper?.papers || [],
 		finishingOptions: filteredFinishingOptions, // Return filtered list
 		isLoading: !paperCsv, // Simple loading check
