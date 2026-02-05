@@ -169,7 +169,7 @@ export const Combobox = ({
 			<div className="relative">
 				<input
 					type="text"
-					className={`w-full p-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm transition-all ${
+					className={`w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none shadow-sm transition-all ${
 						disabled
 							? "bg-slate-100 text-slate-400 cursor-not-allowed"
 							: ""
