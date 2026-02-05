@@ -22,8 +22,8 @@ export default function Dashboard() {
 	const router = useRouter(); // Initialize router
 	const currentYear = new Date().getFullYear();
 
-  const userEmail = auth.currentUser?.email || "";
-  const userName = userEmail.split('@')[0];
+	const userEmail = auth.currentUser?.email || "";
+	const userName = userEmail.split("@")[0];
 
 	// --- PRINTING STATE & REFS ---
 	const componentRef = useRef<HTMLDivElement>(null);
@@ -192,9 +192,9 @@ export default function Dashboard() {
 						<p className="text-slate-400 text-sm">
 							Spectrum Sustainable Print
 						</p>
-            <p className="text-xs mt-3 text-slate-400">
-              Logged in as: {userEmail}
-            </p>
+						<p className="text-xs mt-3 text-slate-400">
+							Logged in as: {userEmail}
+						</p>
 						<Button
 							variant="secondary"
 							size="xs"
