@@ -6,6 +6,9 @@
 
 ### Google spreadsheet as database 
 - mapped and parsed the source google spreadsheet
+  
+### Save as PDF / Print calculation
+- using react-to-print (package lib for react apps)
 
 ## Tech Stack
 
@@ -32,4 +35,5 @@
   - zod (Schema Validation)
 
   - react-hook-form (Form State Management)
-
+ 
+  - react-to-print
