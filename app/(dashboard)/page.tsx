@@ -21,9 +21,6 @@ export default function Dashboard() {
 	const router = useRouter(); // Initialize router
 	const currentYear = new Date().getFullYear();
 
-	const userEmail = auth.currentUser?.email || "";
-	const userName = userEmail.split("@")[0];
-
 	// --- PRINTING STATE & REFS ---
 	const componentRef = useRef<HTMLDivElement>(null);
 	const [showPdfModal, setShowPdfModal] = useState(false);
@@ -31,12 +28,6 @@ export default function Dashboard() {
 		project: "",
 		clientName: "",
 		contact: "",
-	});
-
-	const handlePrint = useReactToPrint({
-		contentRef: componentRef,
-		documentTitle: `costing_${userName}_${clientDetails.project}}`,
-		onAfterPrint: () => setShowPdfModal(false), // Close modal after printing
 	});
 
 	const {
@@ -59,6 +50,19 @@ export default function Dashboard() {
 		updateLine,
 		isFixedQty,
 	} = useQuoteCalculator();
+
+	const userEmail = auth.currentUser?.email || "";
+	const userName = userEmail.split("@")[0];
+
+	const now = new Date();
+  	const timeString = now.toISOString().replace(/[-:T.]/g, "").slice(0, 14);
+	const discountStatus = showDiscount ? "with_discount" : "no_discount";
+
+	const handlePrint = useReactToPrint({
+		contentRef: componentRef,
+		documentTitle: `costing_${userName}_${timeString}_${discountStatus}`,
+		onAfterPrint: () => setShowPdfModal(false), // Close modal after printing
+	});
 
 	// --- LOGOUT HANDLER ---
 	const handleLogout = async () => {
@@ -298,8 +302,9 @@ export default function Dashboard() {
 				</div>
 
 				{/* GLOBAL CONTROLS */}
+				<h2 className="font-bold font-md text-slate-600 mb-2 uppercase">Book / Presentation / Booklet</h2>
 				<div className="bg-white rounded-xl shadow-md border border-slate-200 overflow-hidden mb-6 print:shadow-none print:border-none print:mb-2">
-					<div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-end print:p-0 print:gap-4 print:block">
+					<div className="p-6 grid grid-cols-1 md:grid-cols-12 gap-8 items-center print:p-0 print:gap-4 print:block">
 						{/* 1. Size & Qty Summary (Print Friendly) */}
 						<div className="md:col-span-8 print:w-full print:mb-4">
 							{/* Screen View */}
